@@ -24,4 +24,19 @@ describe('cacheModule', () => {
         expect(resolved).toBeInstanceOf(MemoryCache);
         expect(container.resolve(MemoryCache)).toBe(resolved);
     });
+
+    it('applies cacheOptions when provided to useCache', () => {
+        let now = 0;
+        const cache = useCache<string>({
+            cacheOptions: {
+                defaultTtl: 5,
+                timeProvider: () => now
+            }
+        });
+
+        cache.set('ttl', 'value');
+        now = 10;
+
+        expect(cache.get('ttl')).toBeUndefined();
+    });
 });

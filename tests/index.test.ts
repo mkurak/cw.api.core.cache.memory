@@ -164,4 +164,22 @@ describe('MemoryCache', () => {
         expect(cache.deleteByTag('   ')).toBe(0);
         expect(cache.stats()).toMatchObject({ hits: 0, misses: 0, evictions: 0 });
     });
+
+    it('updates defaults via configure()', () => {
+        let now = 0;
+        const evictions: Array<CacheEviction<string>> = [];
+        const cache = new MemoryCache<string>({ timeProvider: () => now });
+
+        cache.configure({ defaultTtl: 5, onEvict: (payload) => evictions.push(payload) });
+        cache.set('configurable', 'value');
+
+        now = 10;
+        expect(cache.get('configurable')).toBeUndefined();
+        expect(evictions).toHaveLength(1);
+
+        cache.configure({ maxEntries: 1 });
+        cache.set('a', '1');
+        cache.set('b', '2');
+        expect(cache.has('a')).toBe(false);
+    });
 });

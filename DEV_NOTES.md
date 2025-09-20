@@ -4,11 +4,14 @@
 
 ## Overview
 - `MemoryCache` is the primary entry point; it offers TTL handling, maximum entry
-  limits, tag-based invalidation, and concurrency-safe `getOrSet` operations.
+  limits, tag-based invalidation, concurrency-safe `getOrSet`, and a `configure()`
+  method to adjust defaults at runtime.
 - No runtime dependencies. Targets Node.js 18+ with TypeScript sources compiled
   to ESM output under `dist/`.
 - `cacheModule` and `useCache()` (in `src/module.ts`) integrate the cache with
-  `cw.api.core.di`, registering a singleton instance on the container.
+  `cw.api.core.di`, registering a singleton instance on the container. `useCache()`
+  accepts `cacheOptions` to tweak defaults and an optional `configure` callback for
+  advanced adjustments.
 
 ## Design Notes
 - **Storage** – uses `Map<string, CacheEntry<V>>`. Public enumeration helpers
@@ -23,14 +26,17 @@
   re-thrown.
 - **Tags** – `set` accepts `tags`; values are trimmed, deduplicated, and stored
   on the entry. `keysByTag` and `deleteByTag` operate against that set.
+- **Runtime config** – `configure()` updates `defaultTtl`, `maxEntries`, `onEvict`,
+  and `timeProvider`; `enforceSizeLimit()` runs immediately when `maxEntries` is
+  tightened.
 - **Observability** – `stats()` exposes hits/misses/evictions/pending counts.
   `onEvict` callbacks receive the key, reason (`expired`, `maxSize`, `manual`,
   `cleared`, `tag`), and metadata (timestamps, hit count, tags).
 
 ## Testing
 - `tests/index.test.ts` covers TTL expiration, concurrent `getOrSet`,
-  `maxEntries`, tag invalidation, and manual deletions. Time-sensitive tests use
-  the injectable `timeProvider` option.
+  `maxEntries`, tag invalidation, manual deletions, and the runtime `configure()`
+  adjustments. Time-sensitive tests use the injectable `timeProvider` option.
 - `tests/module.test.ts` verifies DI integration (`cacheModule`, `useCache()`)
   always return the same singleton instance from the container.
 - Jest runs in ESM mode via `ts-jest`. Use `import { jest } from '@jest/globals'`

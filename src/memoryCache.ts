@@ -18,8 +18,8 @@ export interface CacheEviction<V> {
 }
 
 export interface MemoryCacheOptions<V> {
-    defaultTtl?: number;
-    maxEntries?: number;
+    defaultTtl?: number | null;
+    maxEntries?: number | null;
     onEvict?: (payload: CacheEviction<V>) => void;
     timeProvider?: () => number;
 }
@@ -66,6 +66,25 @@ export class MemoryCache<V> {
             onEvict: options.onEvict,
             timeProvider: options.timeProvider ?? Date.now
         };
+    }
+
+    configure(options: Partial<MemoryCacheOptions<V>>): void {
+        if (Object.prototype.hasOwnProperty.call(options, 'defaultTtl')) {
+            this.options.defaultTtl = normalizeTtl(options.defaultTtl);
+        }
+
+        if (Object.prototype.hasOwnProperty.call(options, 'maxEntries')) {
+            this.options.maxEntries = normalizeMaxEntries(options.maxEntries);
+            this.enforceSizeLimit();
+        }
+
+        if (Object.prototype.hasOwnProperty.call(options, 'onEvict')) {
+            this.options.onEvict = options.onEvict;
+        }
+
+        if (Object.prototype.hasOwnProperty.call(options, 'timeProvider')) {
+            this.options.timeProvider = options.timeProvider ?? Date.now;
+        }
     }
 
     get size(): number {
@@ -299,15 +318,15 @@ export class MemoryCache<V> {
     }
 }
 
-function normalizeTtl(value: number | undefined): number | undefined {
-    if (value === undefined) {
+function normalizeTtl(value: number | null | undefined): number | undefined {
+    if (value === undefined || value === null) {
         return undefined;
     }
     return value < 0 ? 0 : value;
 }
 
-function normalizeMaxEntries(value: number | undefined): number | undefined {
-    if (value === undefined) {
+function normalizeMaxEntries(value: number | null | undefined): number | undefined {
+    if (value === undefined || value === null) {
         return undefined;
     }
     const normalized = Math.floor(value);

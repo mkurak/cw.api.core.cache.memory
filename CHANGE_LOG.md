@@ -1,5 +1,10 @@
 # Changelog
 
+## [0.3.0] - 2025-09-20
+- Added runtime `configure()` API to adjust cache defaults (TTL, max entries, eviction handler, time provider).
+- Enhanced `useCache()` with `cacheOptions` so DI consumers can provide defaults without manual wiring.
+- Extended documentation and tests to cover the new configuration flow.
+
 ## [0.2.1] - 2025-09-20
 - Updated the GitHub Actions publish workflow to align with provenance-enabled
   npm publishing and Node.js 20.

@@ -54,6 +54,13 @@ const cache = container.resolve(MemoryCache);
 
 // Option 2: shortcut helper
 const sharedCache = useCache();
+
+// Option 3: override defaults via cacheOptions
+const fastExpiringCache = useCache({
+    cacheOptions: {
+        defaultTtl: 5_000
+    }
+});
 ```
 
 The module registers `MemoryCache` as a singleton so the same instance lives for the entire application lifecycle.
@@ -82,6 +89,7 @@ const cache = new MemoryCache<Value>(options?: MemoryCacheOptions<Value>);
 - `keys()` / `keysByTag(tag)` / `entries()` – inspect stored keys and values.
 - `pruneExpired()` – eagerly remove spoiled entries (called automatically on most operations).
 - `stats()` – returns `{ size, hits, misses, evictions, pending }`.
+- `configure(options)` – update defaults (TTL, max entries, eviction callback, time provider) at runtime.
 
 `set` accepts `{ ttl, tags }`; omit `ttl` to inherit the default. Tags are
 normalised (trimmed, deduplicated) before storage.
