@@ -1,7 +1,16 @@
 # Changelog
 
-## [0.1.1] - 2025-09-20
-- İlk sürüm: TTL destekli `MemoryCache` sınıfı, eşzamanlı `getOrSet`, tag bazlı
-  invalidasyon ve gözlemlenebilir istatistikler eklendi.
-- Jest kapsamı, ESLint/Prettier yapılandırmaları ve yayın scriptleri hazırlandı.
-- README ile geliştirici notları ilk işlev setini belgeler hale getirildi.
+## [0.2.1] - 2025-09-20
+- Updated the GitHub Actions publish workflow to align with provenance-enabled
+  npm publishing and Node.js 20.
+
+## [0.2.0] - 2025-09-20
+- Added the `cacheModule` export and the `useCache()` helper to register
+  `MemoryCache` as a singleton inside `cw.api.core.di`.
+- Documented DI usage and expanded developer notes with module details.
+- Introduced `tests/module.test.ts` to cover the DI integration path.
+
+## [0.1.0] - 2025-09-20
+- Initial release scaffolded by `cw-package-gen` with TTL-aware `MemoryCache`,
+  tag APIs, `getOrSet` deduplication, and observability helpers.
+- Established Jest/ESLint/Prettier tooling and baseline documentation.
