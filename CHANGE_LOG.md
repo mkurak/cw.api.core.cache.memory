@@ -1,9 +1,16 @@
 # Changelog
 
+## [0.3.1] - 2025-09-20
+- Added a runtime `configure()` API so cache defaults (TTL, max entries, eviction handler, time provider) can change without reinstantiation.
+- Updated `useCache()` to honour only the first `cacheOptions` configuration for the shared singleton, logging subsequent attempts.
+- Introduced `createMemoryCache()` for callers that require isolated cache instances.
+- Refreshed documentation and tests to cover the new configuration workflow.
+
 ## [0.3.0] - 2025-09-20
-- Added runtime `configure()` API to adjust cache defaults (TTL, max entries, eviction handler, time provider).
-- Enhanced `useCache()` with `cacheOptions` so DI consumers can provide defaults without manual wiring.
-- Extended documentation and tests to cover the new configuration flow.
+- Added a runtime `configure()` API so cache defaults (TTL, max entries, eviction handler, time provider) can change without reinstantiation.
+- Updated `useCache()` to honour only the first `cacheOptions` configuration for the shared singleton, logging subsequent attempts.
+- Introduced `createMemoryCache()` for callers that require isolated cache instances.
+- Refreshed documentation and tests to cover the new configuration workflow.
 
 ## [0.2.1] - 2025-09-20
 - Updated the GitHub Actions publish workflow to align with provenance-enabled

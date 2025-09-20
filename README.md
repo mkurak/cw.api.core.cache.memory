@@ -14,6 +14,7 @@ small helper APIs for deduplicated value resolution.
 - **Observability hooks** – receive eviction callbacks with metadata (hits,
   timestamps, tags) and inspect cache stats at any time.
 - **Zero dependencies** – TypeScript first, Node.js >= 18 runtime.
+- **Flexible wiring** – use the DI helpers for a shared singleton or `createMemoryCache()` for isolated instances.
 
 ## Installation
 
@@ -63,8 +64,17 @@ const fastExpiringCache = useCache({
 });
 ```
 
-The module registers `MemoryCache` as a singleton so the same instance lives for the entire application lifecycle.
+The module registers `MemoryCache` as a singleton so the same instance lives for the entire application lifecycle. Cache options supplied through `useCache()` are only honoured the first time the shared instance is created; later calls should rely on the `configure` helper directly.
 
+### Standalone factory
+
+If you need an isolated cache with custom defaults, call `createMemoryCache()`:
+
+```ts
+import { createMemoryCache } from 'cw.api.core.cache.memory';
+
+const isolatedCache = createMemoryCache({ defaultTtl: 2000, maxEntries: 500 });
+```
 
 ## API Overview
 

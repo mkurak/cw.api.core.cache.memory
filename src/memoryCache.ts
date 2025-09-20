@@ -318,6 +318,10 @@ export class MemoryCache<V> {
     }
 }
 
+export function createMemoryCache<V>(options?: MemoryCacheOptions<V>): MemoryCache<V> {
+    return new MemoryCache<V>(options);
+}
+
 function normalizeTtl(value: number | null | undefined): number | undefined {
     if (value === undefined || value === null) {
         return undefined;
