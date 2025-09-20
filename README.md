@@ -39,6 +39,26 @@ console.log(cache.get('feature-flags')); // => ['alpha']
 console.log(cache.keysByTag('config')); // => ['feature-flags']
 ```
 
+## DI Integration
+
+When using the cache inside the `cw.api.core.di` container, import either the `cacheModule` export or the `useCache()` helper:
+
+```ts
+import { getContainer, registerModules } from 'cw.api.core.di';
+import { MemoryCache, cacheModule, useCache } from 'cw.api.core.cache.memory';
+
+// Option 1: apply the module manually
+const container = getContainer();
+registerModules(container, cacheModule);
+const cache = container.resolve(MemoryCache);
+
+// Option 2: shortcut helper
+const sharedCache = useCache();
+```
+
+The module registers `MemoryCache` as a singleton so the same instance lives for the entire application lifecycle.
+
+
 ## API Overview
 
 ### `MemoryCache`

@@ -1,51 +1,51 @@
 # Developer Notes — cw.api.core.cache.memory
 
-> Bu dosya, hafızada çalışan cache katmanını hatırlamak ve gelecekteki oturumlarda
-> hızlıca bağlama girmek için oluşturuldu.
+> Quick reference for future sessions when context is limited.
 
-## Genel Bakış
-- `MemoryCache` sınıfı tek giriş noktasıdır; TTL, maksimum kayıt sınırı, tag
-  tabanlı invalidasyon ve eşzamanlı `getOrSet` desteği sunar.
-- Hiçbir runtime bağımlılığı yoktur; Node.js >= 18 ve TypeScript hedeflenir.
-- ESM çıktısı `dist/` dizininde `npm run build` komutuyla üretilir.
+## Overview
+- `MemoryCache` is the primary entry point; it offers TTL handling, maximum entry
+  limits, tag-based invalidation, and concurrency-safe `getOrSet` operations.
+- No runtime dependencies. Targets Node.js 18+ with TypeScript sources compiled
+  to ESM output under `dist/`.
+- `cacheModule` and `useCache()` (in `src/module.ts`) integrate the cache with
+  `cw.api.core.di`, registering a singleton instance on the container.
 
-## Tasarım Notları
-- **Depolama**: `Map<string, CacheEntry<V>>` yapısı kullanılır. `entries()` ve
-  `keys()` çağrıları önce `pruneExpired()` ile süresi dolan kayıtları temizler.
-- **TTL**: Varsayılan `defaultTtl` opsiyoneldir; `set` çağrısındaki `ttl`
-  parametresi ile override edilebilir. TTL (ms) 0 veya negatif gelirse kayıt
-  hemen süresi dolmuş kabul edilir.
-- **Sıralama**: `get` çağrıları kayıtları yeniden ekleyerek ekleme sırasını
-  günceller; böylece `maxEntries` uygulandığında FIFO benzeri davranış elde
-  edilir ve en eski kayıtlar atılır.
-- **Eşzamanlılık**: `getOrSet` fonksiyonu aynı anahtar için eşzamanlı fabrikaları
-  tek promiste birleştirir (`pending` haritası). Fabrika hata verirse kayıt
-  yazılmaz ve hatanın kendisi döner.
-- **Tag desteği**: `set` ile gelen `tags` alanı normalleştirilir (trim + unique).
-  `keysByTag` / `deleteByTag` işlemleri bu set üzerinden çalışır.
-- **Gözlemlenebilirlik**: `stats()` hits/misses/evictions/pending değerlerini
-  döner. `onEvict` callback'i sebep (`expired`, `maxSize`, `manual`, `cleared`,
-  `tag`) ve meta bilgileri ile çağrılır.
+## Design Notes
+- **Storage** – uses `Map<string, CacheEntry<V>>`. Public enumeration helpers
+  (`keys`, `entries`) prune expired entries before returning results.
+- **TTL** – `defaultTtl` can be supplied via constructor options; per-entry `ttl`
+  overrides are supported. Negative TTLs are normalised to zero so the entry
+  expires immediately.
+- **Ordering** – every `get` with `updateRecency` re-inserts the entry, so
+  `maxEntries` eviction behaves like FIFO/LRU-lite.
+- **Concurrency** – `getOrSet` deduplicates concurrent factory calls through the
+  `pending` map. If the factory throws, the cache is not mutated and the error is
+  re-thrown.
+- **Tags** – `set` accepts `tags`; values are trimmed, deduplicated, and stored
+  on the entry. `keysByTag` and `deleteByTag` operate against that set.
+- **Observability** – `stats()` exposes hits/misses/evictions/pending counts.
+  `onEvict` callbacks receive the key, reason (`expired`, `maxSize`, `manual`,
+  `cleared`, `tag`), and metadata (timestamps, hit count, tags).
 
-## Testler
-- `tests/index.test.ts` dosyası TTL hatları, `getOrSet` eşzamanlılığı,
-  `maxEntries` davranışı ve tag invalidasyonu dahil temel davranışları kapsar.
-- TTL senaryoları kontrol edilebilir bir saat için `timeProvider` kullanır.
-- Jest globali ESM modunda kullanıldığı için testlerde `import { jest } from
-  '@jest/globals'` yapılır.
+## Testing
+- `tests/index.test.ts` covers TTL expiration, concurrent `getOrSet`,
+  `maxEntries`, tag invalidation, and manual deletions. Time-sensitive tests use
+  the injectable `timeProvider` option.
+- `tests/module.test.ts` verifies DI integration (`cacheModule`, `useCache()`)
+  always return the same singleton instance from the container.
+- Jest runs in ESM mode via `ts-jest`. Use `import { jest } from '@jest/globals'`
+  when mocking timers or factories.
 
-## Scriptler
-- `npm run build` – TypeScript derlemesi (`tsconfig.build.json`).
-- `npm run lint` – ESLint flat config hedefi.
-- `npm run test` / `npm run test:coverage` – Jest (`--experimental-vm-modules`).
-- `npm run hooks:install` – `.githooks` yolunu yapılandırır.
-- `npm run release -- <type>` – sürüm artışı + tag + push (otomatik).
+## Scripts
+- `npm run build` – TypeScript build targeting `dist/` via `tsconfig.build.json`.
+- `npm run lint` – ESLint flat config over `src` and `tests`.
+- `npm run test` / `npm run test:coverage` – Jest with `--experimental-vm-modules`.
+- `npm run hooks:install` – sets up `.githooks` for format → lint → coverage.
+- `npm run release -- <type>` – bump version, commit, tag, and push (requires a
+  configured remote).
 
-## Gelecek Fikirler
-- LRU davranışı için `lastAccessedAt` değerine göre daha akıllı boşaltma.
-- `observe(key)` benzeri bir API ile reactive kullanım.
-- Serileştirilebilir snapshot export/import desteği.
-- Promiselerin süresini sınırlandırmak için `getOrSet` tarafında timeout
-  seçenekleri.
-
-Bu notları her önemli değişiklikte güncel tutmayı unutma.
+## Future Ideas
+- Eviction policies that honour `lastAccessedAt` more strictly (true LRU).
+- Async-aware invalidation hooks or observers (`observe(key)` style API).
+- Serialisation helpers to persist/restore cache state across restarts.
+- Factory timeouts for `getOrSet` to avoid hanging on slow producers.

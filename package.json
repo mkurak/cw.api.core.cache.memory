@@ -1,6 +1,6 @@
 {
   "name": "cw.api.core.cache.memory",
-  "version": "0.1.2",
+  "version": "0.2.0",
   "description": "In-memory cache utilities for cw API",
   "type": "module",
   "main": "./dist/index.js",
@@ -46,7 +46,8 @@
     "prepublishOnly": "npm run build && node scripts/smoke.mjs"
   },
   "dependencies": {
-    "cw.helper.colored.console": "^1.2.2"
+    "cw.helper.colored.console": "^1.2.2",
+    "cw.api.core.di": "^1.0.0"
   },
   "devDependencies": {
     "@eslint/js": "^9.35.0",
