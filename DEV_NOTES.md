@@ -47,8 +47,7 @@
 - `npm run lint` – ESLint flat config over `src` and `tests`.
 - `npm run test` / `npm run test:coverage` – Jest with `--experimental-vm-modules`.
 - `npm run hooks:install` – sets up `.githooks` for format → lint → coverage.
-- `npm run release -- <type>` – bump version, commit, tag, and push (requires a
-  configured remote).
+- `npm version <type>` – bump version and create commit/tag (run `git push --follow-tags` afterwards).
 
 ## Future Ideas
 - Eviction policies that honour `lastAccessedAt` more strictly (true LRU).

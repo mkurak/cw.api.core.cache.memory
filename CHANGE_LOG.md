@@ -1,5 +1,9 @@
 # Changelog
 
+## [0.3.2] - 2025-09-21
+### Changed
+- Removed the `release` npm script and updated documentation to reference `npm version <type>` + `git push --follow-tags`.
+
 ## [0.3.1] - 2025-09-20
 - Added a runtime `configure()` API so cache defaults (TTL, max entries, eviction handler, time provider) can change without reinstantiation.
 - Updated `useCache()` to honour only the first `cacheOptions` configuration for the shared singleton, logging subsequent attempts.

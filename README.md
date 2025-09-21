@@ -119,9 +119,9 @@ Git hooks follow the shared cw workflow (format → lint → coverage). Run
 
 1. Update documentation (`README.md`, `DEV_NOTES.md`, `CHANGE_LOG.md`).
 2. Validate via `npm run lint && npm run test:coverage && npm run build`.
-3. Bump the version with `npm run release -- <type>` and push the generated
-   commit + tag.
-4. Publish through the shared GitHub Actions workflow or `npm publish
+3. Bump the version with `npm version <type>` (adjust the type as needed).
+4. Push the release with `git push --follow-tags`.
+5. Publish through the shared GitHub Actions workflow or `npm publish
    --provenance` when required.
 
 ## License
