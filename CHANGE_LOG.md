@@ -1,5 +1,11 @@
 # Changelog
 
+## [0.3.3] - 2025-09-21
+### Added
+- Introduced a smoke test that exercises basic `MemoryCache` operations to catch regressions early.
+### Changed
+- Release notes now reference `npm version <type>` followed by `git push --follow-tags` for publishing.
+
 ## [0.3.2] - 2025-09-21
 ### Changed
 - Removed the `release` npm script and updated documentation to reference `npm version <type>` + `git push --follow-tags`.
