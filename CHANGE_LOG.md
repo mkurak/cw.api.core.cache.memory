@@ -1,5 +1,9 @@
 # Changelog
 
+## [0.3.4] - 2025-09-21
+### Changed
+- Simplified the pre-commit hook to run only format, lint, and coverage checks.
+
 ## [0.3.3] - 2025-09-21
 ### Added
 - Introduced a smoke test that exercises basic `MemoryCache` operations to catch regressions early.
