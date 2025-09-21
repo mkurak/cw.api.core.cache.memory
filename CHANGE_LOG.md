@@ -1,5 +1,9 @@
 # Changelog
 
+## [0.3.5] - 2025-09-21
+### Changed
+- Removed automatic post-commit tagging; commits now leave tag management entirely manual.
+
 ## [0.3.4] - 2025-09-21
 ### Changed
 - Simplified the pre-commit hook to run only format, lint, and coverage checks.
